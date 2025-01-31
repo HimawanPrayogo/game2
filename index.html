@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stickman Boxing Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            overflow: hidden;
+        }
+        canvas {
+            border: 2px solid black;
+            background-color: #ffffff;
+        }
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div class="controls">
+        <p>Arrow Keys: Move</p>
+        <p>Spacebar: Punch</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const stickmanWidth = 40;
+        const stickmanHeight = 60;
+        let stickmanX = 100;
+        let stickmanY = canvas.height - stickmanHeight - 20;
+        let speed = 5;
+        let isPunching = false;
+
+        // Keystates for movement and punching
+        let moveLeft = false;
+        let moveRight = false;
+        let moveUp = false;
+        let moveDown = false;
+
+        const opponent = {
+            x: canvas.width - 100,
+            y: canvas.height - stickmanHeight - 20,
+            width: stickmanWidth,
+            height: stickmanHeight,
+            color: 'red',
+        };
+
+        // Draw stickman
+        function drawStickman(x, y, isPunching) {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(x, y, stickmanWidth, stickmanHeight); // Body
+            if (isPunching) {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(x + stickmanWidth, y + stickmanHeight / 3, 10, 20); // Punch
+            }
+        }
+
+        // Draw opponent
+        function drawOpponent() {
+            ctx.fillStyle = opponent.color;
+            ctx.fillRect(opponent.x, opponent.y, opponent.width, opponent.height);
+        }
+
+        // Clear canvas
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Update game state
+        function updateGame() {
+            clearCanvas();
+
+            if (moveLeft && stickmanX > 0) stickmanX -= speed;
+            if (moveRight && stickmanX < canvas.width - stickmanWidth) stickmanX += speed;
+            if (moveUp && stickmanY > 0) stickmanY -= speed;
+            if (moveDown && stickmanY < canvas.height - stickmanHeight) stickmanY += speed;
+
+            drawStickman(stickmanX, stickmanY, isPunching);
+            drawOpponent();
+
+            requestAnimationFrame(updateGame);
+        }
+
+        // Event listeners for key controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') moveLeft = true;
+            if (e.key === 'ArrowRight') moveRight = true;
+            if (e.key === 'ArrowUp') moveUp = true;
+            if (e.key === 'ArrowDown') moveDown = true;
+            if (e.key === ' ') isPunching = true;
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') moveLeft = false;
+            if (e.key === 'ArrowRight') moveRight = false;
+            if (e.key === 'ArrowUp') moveUp = false;
+            if (e.key === 'ArrowDown') moveDown = false;
+            if (e.key === ' ') isPunching = false;
+        });
+
+        updateGame();
+    </script>
+</body>
+</html>
